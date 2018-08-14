@@ -110,7 +110,7 @@ int main()
 
     for (unsigned k = 1; k < 20; k += 1)
     {
-        kNN::WeightedClassifier classifier(k, kNN::distance::euclidean, kNN::kernel::gaussian);
+        kNN::WeightedClassifier classifier(k, kNN::distance::euclidean, kNN::kernel::uniform);
         classifier.fit(train_set, 2);
         predicted_set = classifier.test(test_set);
 

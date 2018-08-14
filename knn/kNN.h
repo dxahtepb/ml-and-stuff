@@ -75,7 +75,7 @@ namespace kNN
             for (size_t idx = 0; idx < this->n_neighbors; ++idx)
             {
                 double normalized_dist = distances[idx].first / max_dist;
-                possible_labels[distances[idx].second] += kernel(normalized_dist);
+                possible_labels[distances[idx].second] += normalized_dist;
             }
 
             double max_possible = -1;
