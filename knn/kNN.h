@@ -48,38 +48,41 @@ namespace kNN
             return ret;
         }
 
-        int test_one(Point const & sample)
+        long test_one(Point const & sample_point)
         {
-            std::vector< std::pair<double, int> > distances;
-            for (size_t idx = 0; idx < this->state->size(); ++idx)
+            std::vector< std::pair<double, long> > distances;
+            for (auto &known_point : *this->state)
             {
-                distances.emplace_back(this->distance_measure(sample, this->state->at(idx)),
-                                       (this->state->at(idx).label));
+                distances.emplace_back(this->distance_measure(sample_point, known_point),
+                                       known_point.label);
             }
             std::sort(distances.begin(), distances.end());
             return apply_weights(distances);
         }
 
     private:
-        unsigned n_neighbors;
+        unsigned long n_neighbors;
         distance::distance_func distance_measure;
         kernel::kernel_func kernel;
-        unsigned n_classes;
+        unsigned long n_classes;
 
         DatasetPtr state;
 
-        int apply_weights(std::vector< std::pair<double, int> > const & distances)
+        long apply_weights(std::vector< std::pair<double, long> > const & distances)
         {
-            std::vector<double> possible_labels(n_classes);
-            double max_dist = distances.at(n_neighbors - 1).first;
-            for (size_t idx = 0; idx < this->n_neighbors; ++idx)
+            std::vector<double> possible_labels(n_classes, 0);
+
+            double max_dist = distances.size() <= n_neighbors ?
+                    distances.end()->first : distances.at(n_neighbors - 1).first;
+
+            for (size_t idx = 0; idx < this->n_neighbors && idx < distances.size(); ++idx)
             {
                 double normalized_dist = distances[idx].first / max_dist;
                 possible_labels[distances[idx].second] += kernel(normalized_dist);
             }
 
             double max_possible = -1;
-            int max_label;
+            long max_label = 0;
             for (size_t idx = 0; idx < this->n_classes; ++idx)
             {
                 if (possible_labels[idx] > max_possible)
