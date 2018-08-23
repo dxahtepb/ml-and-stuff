@@ -15,7 +15,8 @@ namespace kNN
         using distance_func = std::function<double(kNN::Point, kNN::Point)>;
 
         template<int P>
-        distance_func minkowski = [](Point const & a, Point const & b) {
+        distance_func minkowski = [](Point const & a, Point const & b)
+        {
             long double mink_sum = 0;
             for (size_t idx = 0; idx < a.coords.size(); ++idx)
             {
@@ -24,7 +25,8 @@ namespace kNN
             return static_cast<double> (powl(mink_sum, 1.0/P));
         };
 
-        distance_func chebyshev = [](Point const & a, Point const & b) {
+        distance_func chebyshev = [](Point const & a, Point const & b)
+        {
             double max_dist = -1;
             for (size_t idx = 0; idx < a.coords.size(); ++idx)
             {
@@ -41,35 +43,43 @@ namespace kNN
     {
         using kernel_func = std::function<double(double)>;
 
-        kernel_func uniform = [](double u) -> double {
+        kernel_func uniform = [](double u) -> double
+        {
             return 0.5;
         };
 
-        kernel_func gaussian = [](double u) -> double {
+        kernel_func gaussian = [](double u) -> double
+        {
             return std::pow(M_E, -u*u / 2) / sqrt(2 * M_PI);
         };
 
-        kernel_func sigmoid = [](double u) -> double {
+        kernel_func sigmoid = [](double u) -> double
+        {
             return 2 / (M_PI * (std::pow(M_E, u) + std::pow(M_E, -u)));
         };
 
-        kernel_func triangular = [](double u) -> double {
+        kernel_func triangular = [](double u) -> double
+        {
             return 1 - fabs(u);
         };
 
-        kernel_func quartic = [](double u) -> double {
+        kernel_func quartic = [](double u) -> double
+        {
             return 15 * ((1 - u*u)*(1 - u*u)) / 16;
         };
 
-        kernel_func epanechnikov = [](double u) -> double {
+        kernel_func epanechnikov = [](double u) -> double
+        {
             return 3 * (1 - u*u) / 4;
         };
 
-        kernel_func logistic = [](double u) -> double {
+        kernel_func logistic = [](double u) -> double
+        {
             return 1 / (std::pow(M_E, u) + 2 + std::pow(M_E, -u));
         };
 
-        kernel_func cosine = [](double u) -> double {
+        kernel_func cosine = [](double u) -> double
+        {
             return M_PI_4 * std::cos(M_PI_2 * u);
         };
     }
