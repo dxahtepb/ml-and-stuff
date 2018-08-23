@@ -1,3 +1,4 @@
 # ml-and-all-that-kind-of-shit
 
-boost is required at some places, install it pls
+c plus plus deviation could be found here
+  so, boost is required at some places, install it pls
