@@ -109,6 +109,20 @@ namespace kNN
         return calculate_recall(confusion);
     }
 
+    double calculate_specificity(ConfusionMatrixPtr const & confusion)
+    {
+        return 1.0f * confusion->at("TN") / (confusion->at("TN") + confusion->at("FP"));
+    }
+
+    double
+    calculate_specificity(DatasetPtr const & known_classes, DatasetPtr const & predicted_classes)
+    {
+        auto confusion = evaluate_confusion_matrix(known_classes, predicted_classes);
+
+        return calculate_specificity(confusion);
+    }
+
+
     double
     evaluate_F1_score(ConfusionMatrixPtr const & confusion)
     {
