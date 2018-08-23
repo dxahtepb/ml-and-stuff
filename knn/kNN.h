@@ -7,28 +7,31 @@
 
 #include <algorithm>
 #include <iostream>
+#include <utility>
+
 #include "dataset.h"
+#include "statistics.h"
 #include "functions.h"
 
 namespace kNN
 {
-    struct Model
+    struct ClassifierModel
     {
     public:
-        Model() = default;
+        ClassifierModel() = default;
         virtual void fit(DatasetPtr const &, unsigned n_classes) = 0;
         virtual DatasetPtr test(DatasetPtr const &) = 0;
     };
 
-    struct WeightedClassifier : Model
+    struct WeightedClassifier : ClassifierModel
     {
     public:
         WeightedClassifier(unsigned n_neighbors,
-                      distance::distance_func const & distance_measure,
-                      kernel::kernel_func const & kernel)
+                           distance::distance_func distance_measure,
+                           kernel::kernel_func kernel)
                 : n_neighbors(n_neighbors),
-                  distance_measure(distance_measure),
-                  kernel(kernel),
+                  distance_measure(std::move(distance_measure)),
+                  kernel(std::move(kernel)),
                   n_classes(0)
         {}
 
@@ -50,7 +53,7 @@ namespace kNN
 
         long test_one(Point const & sample_point)
         {
-            std::vector< std::pair<double, long> > distances;
+            std::vector< std::pair<double, unsigned> > distances;
             for (auto &known_point : *this->state)
             {
                 distances.emplace_back(this->distance_measure(sample_point, known_point),
@@ -68,14 +71,14 @@ namespace kNN
 
         DatasetPtr state;
 
-        long apply_weights(std::vector< std::pair<double, long> > const & distances)
+        long apply_weights(std::vector< std::pair<double, unsigned> > const & distances)
         {
             std::vector<double> possible_labels(n_classes, 0);
 
             double max_dist = distances.size() <= n_neighbors ?
                     distances.end()->first : distances.at(n_neighbors - 1).first;
 
-            for (size_t idx = 0; idx < this->n_neighbors && idx < distances.size(); ++idx)
+            for (size_t idx = 0; idx < n_neighbors && idx < distances.size(); ++idx)
             {
                 double normalized_dist = distances[idx].first / max_dist;
                 possible_labels[distances[idx].second] += kernel(normalized_dist);
