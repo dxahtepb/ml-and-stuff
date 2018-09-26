@@ -2,6 +2,8 @@ import random
 import logging
 from copy import copy
 
+from ITMO.knn.statistics import Metrics
+
 import ITMO.knn.functions.kernel as kernels
 import ITMO.knn.functions.distance as distances
 
@@ -100,10 +102,9 @@ KERNEL = kernels.sigmoid
 def main():
     table = read_csv('dataset.txt', '\t')
     all_samples = make_dataset(table)
-
     classifier = WeightedKNNClassifier(N_NEIGHBORS, DISTANCE_METRIC, KERNEL)
     x = k_fold_cross_validation(all_samples, classifier, n_classes=2, k_fold=5,
-                                accuracy_measure=lambda x, y: 1)
+                                accuracy_measure=Metrics.f_score)
     print(evaluate_optimal_k(all_samples, WeightedKNNClassifier, 2, 20,
                              distance_metric=DISTANCE_METRIC, kernel=KERNEL))
     print(x)
