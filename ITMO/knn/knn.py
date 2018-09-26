@@ -23,10 +23,10 @@ class ClassifierModel:
         pass
 
 
-class WeightedClassifier(ClassifierModel):
-    def __init__(self, n_neighbors, distance_measure, kernel):
+class WeightedKNNClassifier(ClassifierModel):
+    def __init__(self, n_neighbors, distance_metric, kernel):
         self.n_neighbors = n_neighbors
-        self.distance_measure = distance_measure
+        self.distance_metric = distance_metric
         self.kernel = kernel
         self.n_classes = 0
         self.state = None
@@ -45,8 +45,8 @@ class WeightedClassifier(ClassifierModel):
         distances = list()
         for known_point in self.state:
             distances.append(Distance(
-                self.distance_measure(point, known_point), known_point.label))
-        return self._apply_weights(sorted(distances[:self.n_neighbors+1]))
+                self.distance_metric(point, known_point), known_point.label))
+        return self._apply_weights(sorted(distances)[:self.n_neighbors+1])
 
     def _apply_weights(self, distances):
         possible_labels = [0] * self.n_classes
