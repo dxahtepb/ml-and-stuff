@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def argmax(sequence):
     max_possible = -1
     max_label = 0
@@ -8,8 +11,18 @@ def argmax(sequence):
     return max_label
 
 
-def read_csv(file_name, delim):
+def read_csv(file_name, delim, skip_header=False):
     lines = list()
     for line in open(file_name, 'r'):
         lines.append(line.rstrip().split(delim))
-    return lines
+    return lines[1 if skip_header else 0:]
+
+
+def normalize(xs: np.ndarray):
+    mean = sum(xs) / len(xs)
+    deviation = (sum((xs - mean)**2) / len(xs)) ** (1/2)
+    return (xs - mean) / deviation, mean, deviation
+
+
+def denormalize(xs, mean, deviation):
+    return xs * deviation + mean

@@ -1,10 +1,11 @@
 class Metrics:
-    def accuracy(test_data=[], predicted_data=[], *args):
-        return sum([1 if test_data[i].label != predicted_data[i].label else 0 for i in range(len(test_data))]) / len(test_data)
+    @staticmethod
+    def accuracy(test_data, predicted_data, *args):
+        return sum([1 if test_data[i].label == predicted_data[i].label else 0 for i in range(len(test_data))]) / len(test_data)
 
-
-    def f_score(test_data=[], predicted_data=[], n_classes=2, beta=1, *args):
-        def get_c_matrix(test_data=[],predicted_data=[], n_classes=2):
+    @staticmethod
+    def f_score(test_data, predicted_data, n_classes=2, beta=1, *args):
+        def get_c_matrix(test_data, predicted_data, n_classes=2):
             """
             lines represent classifier decisions
             columns represent test data

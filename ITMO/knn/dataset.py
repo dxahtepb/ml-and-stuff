@@ -9,7 +9,3 @@ class Point:
     def __str__(self):
         return \
             f'(coords: {" ".join(map(str, self.coords))}, label: {self.label})'
-
-
-class Dataset(List[Point]):
-    pass

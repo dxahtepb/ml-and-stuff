@@ -17,5 +17,7 @@ def chebyshev(a, b):
 
 def minkowsky(p):
     return functools.partial(_minkowski, p=p)
+
+
 euclidean = functools.partial(_minkowski, p=2)
 manhattan = functools.partial(_minkowski, p=1)
