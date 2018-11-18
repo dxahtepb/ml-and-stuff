@@ -1,6 +1,5 @@
 import os
 
-from pprint import pprint
 
 SPAM_LABEL = "spmsg"
 
@@ -15,11 +14,15 @@ class Mail:
         is_spam: Bool (default = False)
     """
 
-    def __init__(self, subject, body, title, is_spam=False):
+    def __init__(self, subject, body, title, fold, is_spam=False):
         self.title = title
-        self.subject = subject
-        self.body = body
+        self.subject = set(subject)
+        self.body = set(body)
+        self.all_words = sorted(list(set(self.subject.union(self.body))))
+        self.subject = sorted(list(set(self.subject)))
+        self.body = sorted(list(set(self.body)))
         self._is_spam = is_spam
+        self.fold = fold
 
     @property
     def spam(self):
@@ -30,22 +33,8 @@ class Mail:
         return not self._is_spam
 
     def __repr__(self):
-        return f'{self.title} - {self.spam}\n\t{self.subject}\n\t{self.body}'
-
-    def __str__(self):
-        return self.__repr__()
-
-
-class DataFold:
-
-    def __init__(self, hams, spams):
-        self.hams = hams
-        self.spams = spams
-
-    def __repr__(self):
-        hams_repr = '\n'.join([str(m)for m in self.hams])
-        spams_repr = '\n'.join([str(m)for m in self.spams])
-        return f'hams: {hams_repr}\n\t-----\nspams: {spams_repr}'
+        return '{} - {}\n\t{}\n\t{}'.format(
+            self.title, self.spam, self.subject, self.body)
 
     def __str__(self):
         return self.__repr__()
@@ -53,21 +42,19 @@ class DataFold:
 
 def read_dataset_folds(dir_path):
     folds = []
-    for dir in os.listdir(dir_path):
-        messages = _read_part(os.path.join(dir_path, dir))
-        hams = [message for message in messages if message.ham]
-        spams = [message for message in messages if message.spam]
-        folds.append(DataFold(hams, spams))
+    for fold_n, dir in enumerate(os.listdir(dir_path)):
+        messages = _read_part(os.path.join(dir_path, dir), fold_n)
+        folds.append(messages)
     return folds
 
 
-def _read_part(dir_path):
+def _read_part(dir_path, fold_n):
     messages = []
     for file_path in os.listdir(dir_path):
         with open(os.path.join(dir_path, file_path)) as file_obj:
             subject, body = _read_message(file_obj)
             is_spam = False if file_path.find(SPAM_LABEL) < 0 else True
-            messages.append(Mail(subject, body, file_path, is_spam))
+            messages.append(Mail(subject, body, file_path, fold_n, is_spam))
     return messages
 
 
@@ -80,8 +67,3 @@ def _read_message(file_obj):
     body = body.strip().split(' ')
 
     return subject, body
-
-# TEST
-# if __name__ == '__main__':
-#     folds = read_dataset_folds(r'')
-#     pprint(folds[0])
