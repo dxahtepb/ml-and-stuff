@@ -1,6 +1,6 @@
 import random
 import logging
-from copy import copy
+import copy
 
 from ITMO.knn.statistics import Metrics
 
@@ -31,7 +31,7 @@ def split_dataset(samples, ratio):
 def leave_one_out_validation(samples, classifier, n_classes):
     misses = 0
     for idx in range(len(samples)):
-        one_out_data = copy(samples)
+        one_out_data = copy.copy(samples)
         sample = one_out_data.pop(idx)
 
         classifier.fit(one_out_data, n_classes)
@@ -103,14 +103,12 @@ def main():
     table = read_csv('dataset.txt', '\t')
     all_samples = make_dataset(table)
     classifier = WeightedKNNClassifier(N_NEIGHBORS, DISTANCE_METRIC, KERNEL)
-    x = k_fold_cross_validation(all_samples, classifier, n_classes=2, k_fold=5,
+    x = k_fold_cross_validation(all_samples, classifier, n_classes=2, k_fold=9,
                                 accuracy_measure=Metrics.f_score)
-    print(evaluate_optimal_k(all_samples, WeightedKNNClassifier, 2, 20,
-                             distance_metric=DISTANCE_METRIC, kernel=KERNEL))
     print(x)
 
 
 if __name__ == '__main__':
-    random.seed(42)
+    # random.seed(42)
     logging.basicConfig(level=logging.DEBUG)
     main()

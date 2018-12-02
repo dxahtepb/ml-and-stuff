@@ -8,4 +8,4 @@ class Point:
 
     def __str__(self):
         return \
-            f'(coords: {" ".join(map(str, self.coords))}, label: {self.label})'
+            '(coords: {}, label: {})'.format(" ".join(map(str, self.coords)), self.label)
