@@ -73,7 +73,7 @@ def main():
     xs, _, _ = list(normalize(np.array(xs)))
     ys = [-1 if y == 0 else 1 for y in ys]
 
-    classifier = SVMClassifier(C=1000, kernel=kernels.Polynomial(2, gamma=1))
+    classifier = SVMClassifier(C=1, kernel=kernels.Polynomial(2, gamma=1))
     ans = k_fold_cross_validation((xs, ys), classifier, Metrics.f_score2, k_fold=9, verbose=True)
     print(ans)
 
