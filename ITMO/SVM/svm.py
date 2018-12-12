@@ -3,7 +3,7 @@ from functools import partial
 import numpy as np
 import cvxopt
 
-from ITMO.SVM.kernels import Polynomial
+from ITMO.SVM.kernels import Polynomial, Linear
 from ITMO.util import silence_stdout
 
 
@@ -13,13 +13,13 @@ class SVMClassifier:
         self.kernel = kernel
         self.verbose = verbose
         self.weights = []
-        self.ys = []
-        self.xs = []
+        self.supp_classes = []
+        self.supp_vectors = []
         self.b = 0
 
     def _reset(self):
-        self.xs = []
-        self.ys = []
+        self.supp_vectors = []
+        self.supp_classes = []
         self.weights = []
         self.b = None
 
@@ -77,21 +77,21 @@ class SVMClassifier:
             if l < 1e-5:
                 continue
 
-            self.xs.append(xs[idx])
-            self.ys.append(ys[idx])
+            self.supp_vectors.append(xs[idx])
+            self.supp_classes.append(ys[idx])
             self.weights.append(l)
 
-        self.xs, self.ys, self.weights = \
-            map(np.array, (self.xs, self.ys, self.weights))
+        self.supp_vectors, self.supp_classes, self.weights = \
+            map(np.array, (self.supp_vectors, self.supp_classes, self.weights))
 
-        if isinstance(self.kernel, Polynomial):
+        if isinstance(self.kernel, (Polynomial, Linear)):
             idx = 0
             while self.b is None:
                 if self.weights[idx] + 1e-6 < self.C:
                     self.b = 0
-                    for l_i, x_i, y_i in zip(self.weights, self.xs, self.ys):
-                        self.b += l_i * y_i * self.kernel(x_i, self.xs[idx])
-                    self.b -= self.ys[idx]
+                    for l_i, x_i, y_i in zip(self.weights, self.supp_vectors, self.supp_classes):
+                        self.b += l_i * y_i * self.kernel(x_i, self.supp_vectors[idx])
+                    self.b -= self.supp_classes[idx]
                 idx += 1
         else:
             self.b = 0
@@ -101,7 +101,7 @@ class SVMClassifier:
 
         for x in xs:
             res = 0
-            for l_i, x_i, y_i in zip(self.weights, self.xs, self.ys):
+            for l_i, x_i, y_i in zip(self.weights, self.supp_vectors, self.supp_classes):
                 res += l_i * y_i * self.kernel(x_i, x)
             ys.append(res - self.b)
 
