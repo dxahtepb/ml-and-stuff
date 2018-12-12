@@ -1,5 +1,5 @@
 from ITMO.NaiveBayes.Dataset import *
-from ITMO.NaiveBayes.Metrics import Metrics
+from ITMO.NewShinyNaiveBayes.Metrics import Metrics
 import math
 import numpy as np
 import copy

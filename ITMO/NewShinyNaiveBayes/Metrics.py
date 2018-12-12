@@ -42,3 +42,13 @@ class Metrics:
     def f_score2(test_data, predicted_data):
         from sklearn.metrics import f1_score
         return f1_score(test_data, predicted_data)
+
+    @staticmethod
+    def get_confusion(test_data, predicted_data):
+        from sklearn.metrics import confusion_matrix
+        return confusion_matrix(test_data, predicted_data)
+
+    @staticmethod
+    def confusion_dict(test_data, predicted_data):
+        x = Metrics.get_confusion(test_data, predicted_data)
+        return {'TP': x[1][1], 'TN': x[0][0], 'FN': x[1][0], 'FP': x[0][1]}
