@@ -38,6 +38,6 @@ def silence_stdout():
     old_target = sys.stdout
     sys.stdout = new_target
     try:
-        yield new_target
+        yield
     finally:
         sys.stdout = old_target
