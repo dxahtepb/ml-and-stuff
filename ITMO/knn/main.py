@@ -2,6 +2,8 @@ import random
 import logging
 import copy
 
+import numpy as np
+
 from ITMO.knn.statistics import Metrics
 
 import ITMO.knn.functions.kernel as kernels
@@ -94,6 +96,21 @@ def k_fold_cross_validation(samples, classifier, n_classes,
     return accuracy_sum / k_fold / n_tries
 
 
+def count_bicentral(samples, bic_a, mean=False):
+    bicentral_samples = []
+    means = [0 for b in samples[0].coords]
+    if mean:
+        for idx in range(len(means)):
+            means[idx] = np.mean([samples[i].coords[idx] for i in range(len(samples))])
+            for sample in samples:
+                sample.coords[idx] -= means[idx]
+    for sample in samples:
+        bicentral_samples.append(
+            Point(sample.label, [np.sqrt(sum([pow(coord - bic_a,2) for coord in sample.coords])),
+                                 np.sqrt(sum([pow(coord + bic_a,2) for coord in sample.coords]))]))
+    return bicentral_samples
+
+
 N_NEIGHBORS = 10
 DISTANCE_METRIC = distances.manhattan
 KERNEL = kernels.sigmoid
@@ -102,6 +119,7 @@ KERNEL = kernels.sigmoid
 def main():
     table = read_csv('dataset.txt', '\t')
     all_samples = make_dataset(table)
+    all_samples = count_bicentral(all_samples, 0.25)
     classifier = WeightedKNNClassifier(N_NEIGHBORS, DISTANCE_METRIC, KERNEL)
     x = k_fold_cross_validation(all_samples, classifier, n_classes=2, k_fold=9,
                                 accuracy_measure=Metrics.f_score)
