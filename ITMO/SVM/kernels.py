@@ -48,7 +48,7 @@ class RadialBasis(Kernel):
 
 class Tangent(Kernel):
     def _function(self, x, y):
-        return np.tanh(np.dot(x, y) * self.k - self.c)
+        return np.tanh(np.dot(self.k * np.array(x), y) + self.c)
 
     def __init__(self, k, c):
         super(Tangent, self).__init__()
