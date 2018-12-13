@@ -1,3 +1,3 @@
 Labs from Machine Learning course
 
-ITMO University, Informational Systems and Technologies
+ITMO University, Information Systems and Technologies
